@@ -1,0 +1,4 @@
+Model,Best_Val_Acc,Test_Accuracy,Fire_Precision,Fire_Recall,Fire_F1
+BaselineCNN,0.7738,0.68,0.29,0.39,0.33
+ImprovedCNN,0.8373,0.83,0.62,0.44,0.52
+ImprovedCNN + WeightedRandomSampler,0.7282,0.7,0.33,0.5,0.4
