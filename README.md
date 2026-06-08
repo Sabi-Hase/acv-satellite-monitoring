@@ -22,13 +22,13 @@ A motivação é apoiar o monitoramento de queimadas florestais com visão compu
 O projeto utiliza o dataset **Sen2Fire**, composto por patches de satélite com:
 
 * **2.466 patches** no total
-* imagens com **12 bandas**
-* resolução de **512 x 512** por patch
-* rótulo espacial por pixel, convertido aqui em **rótulo binário por patch**
+* imagens com **12 bandas espectrais**
+* resolução de **512 × 512** por patch
+* rótulo espacial por pixel, convertido neste projeto para **rótulo binário por patch**
 
-### Distribuição dos dados
+### Divisão dos dados
 
-A divisão foi feita por cena para reduzir vazamento entre conjuntos:
+A divisão foi realizada por cena para reduzir vazamento de informação entre conjuntos:
 
 * **Treino:** `scene1` e `scene2`
 * **Validação:** `scene3`
@@ -36,75 +36,88 @@ A divisão foi feita por cena para reduzir vazamento entre conjuntos:
 
 ### Distribuição por classe
 
-No conjunto total:
+No conjunto completo:
 
 * **2.117** patches sem fogo
 * **349** patches com fogo
 
-O dataset é desbalanceado, então o projeto avalia também estratégias para lidar com esse cenário.
+O dataset apresenta desbalanceamento entre classes, motivando a avaliação de estratégias específicas para esse cenário.
 
 ## Pré-processamento
 
 As imagens foram:
 
 * carregadas dos arquivos `.npz`
-* redimensionadas para **128 x 128**
+* redimensionadas para **128 × 128**
 * normalizadas por patch
 * convertidas para tensores PyTorch
 
 ## Modelos treinados
 
-Foram treinadas **3 abordagens**:
+Foram avaliadas três abordagens.
 
 ### 1. BaselineCNN
 
-CNN inicial com blocos convolucionais, BatchNorm, ReLU, MaxPooling e Dropout.
+CNN inicial composta por blocos convolucionais com:
+
+* Convolução
+* Batch Normalization
+* ReLU
+* Max Pooling
+* Dropout
 
 ### 2. ImprovedCNN
 
-Versão mais profunda e mais estável, com mais camadas convolucionais, Dropout progressivo e `AdaptiveAvgPool2d`.
+Versão mais profunda e mais estável contendo:
+
+* mais camadas convolucionais
+* regularização por Dropout progressivo
+* camada `AdaptiveAvgPool2d`
 
 ### 3. ImprovedCNN + WeightedRandomSampler
 
-Versão treinada com amostragem balanceada para tentar melhorar a classe minoritária.
+Versão treinada com amostragem balanceada para aumentar a representatividade da classe minoritária.
 
 ## Resultados
 
 ### Melhor desempenho de validação
 
 | Modelo                              | Best Val Acc |
-| ----------------------------------- | -----------: |
-| BaselineCNN                         |       0.7738 |
-| ImprovedCNN                         |       0.8373 |
-| ImprovedCNN + WeightedRandomSampler |       0.7282 |
+| ----------------------------------- | ------------ |
+| BaselineCNN                         | 0.7738       |
+| ImprovedCNN                         | 0.8373       |
+| ImprovedCNN + WeightedRandomSampler | 0.7282       |
 
-### Desempenho no teste
+### Desempenho no conjunto de teste
 
-| Modelo                              | Test Accuracy | F1 da classe "com fogo" |
-| ----------------------------------- | ------------: | ----------------------: |
-| BaselineCNN                         |          0.68 |                    0.33 |
-| ImprovedCNN                         |          0.83 |                    0.52 |
-| ImprovedCNN + WeightedRandomSampler |          0.70 |                    0.40 |
+| Modelo                              | Accuracy | F1 (classe fogo) |
+| ----------------------------------- | -------- | ---------------- |
+| BaselineCNN                         | 0.68     | 0.33             |
+| ImprovedCNN                         | 0.83     | 0.52             |
+| ImprovedCNN + WeightedRandomSampler | 0.70     | 0.40             |
 
 ### Conclusão técnica
 
-A **ImprovedCNN** foi a melhor escolha final por apresentar o melhor equilíbrio entre desempenho geral e capacidade de detectar a classe minoritária.
+A **ImprovedCNN** apresentou o melhor equilíbrio entre desempenho geral e capacidade de detecção da classe de interesse.
 
-A versão com `WeightedRandomSampler` aumentou a sensibilidade para fogo, mas reduziu a estabilidade e o desempenho global.
+Embora o uso de `WeightedRandomSampler` tenha aumentado o recall da classe fogo, houve perda de desempenho global quando comparado à arquitetura ImprovedCNN sem amostragem balanceada.
 
 ## Demonstração funcional
 
-O notebook inclui uma função de inferência para testar o modelo em novos patches e retornar:
+O projeto inclui uma aplicação simples em Streamlit capaz de:
 
-* rótulo real
-* predição do modelo
-* confiança da predição
+* carregar arquivos `.npz`
+* visualizar bandas do satélite
+* exibir o rótulo real
+* executar inferência utilizando o melhor modelo treinado
+* apresentar probabilidades e confiança da predição
 
 ## Estrutura do repositório
 
 ```text
 acv-satellite-monitoring/
 ├── app/
+│   └── streamlit_app.py
 ├── artifacts/
 ├── data/
 │   ├── raw/
@@ -121,13 +134,8 @@ acv-satellite-monitoring/
 └── requirements.txt
 ```
 
-## Arquivos importantes
+## Arquivos gerados
 
-Os principais artefatos gerados pelo projeto são:
-
-* `artifacts/baseline_cnn_best.pt`
-* `artifacts/improved_cnn_best.pt`
-* `artifacts/improved_balanced_cnn_best.pt`
 * `results/model_comparison.csv`
 * `results/model_comparison.png`
 
@@ -148,7 +156,7 @@ pip install -r requirements.txt
 
 ### 3. Abrir o notebook
 
-Abra o arquivo:
+Abra:
 
 ```text
 notebooks/01_dataset_exploration.ipynb
@@ -161,9 +169,15 @@ O notebook contém:
 * exploração do dataset
 * pré-processamento
 * treinamento das CNNs
-* avaliação final
+* avaliação dos modelos
 * comparação entre arquiteturas
-* inferência com novas imagens
+* inferência em novos patches
+
+### 5. Executar a interface Streamlit
+
+```powershell
+streamlit run app/streamlit_app.py
+```
 
 ## Tecnologias utilizadas
 
@@ -174,23 +188,23 @@ O notebook contém:
 * Matplotlib
 * scikit-learn
 * Jupyter Notebook
-* FastAPI (preparado para demonstração)
+* Streamlit
 
 ## Observações
 
-Este projeto foi construído do zero sobre uma base anterior de estudo, com foco em:
+Projeto desenvolvido com foco em:
 
-* organização de repositório
-* reprodutibilidade
-* documentação clara
-* comparação técnica entre modelos
-* aplicação prática em um cenário espacial
+* visão computacional aplicada
+* sensoriamento remoto
+* monitoramento ambiental
+* reprodutibilidade experimental
+* comparação de arquiteturas de CNN
 
 ## Autor(es)
 
-* **Sabrina Flores - RM550781**
-* **Gabriel Riqueto - RM98685**
-* **Leonardo Mansur - RM551659**
+* Sabrina Flores - RM550781
+* Gabriel Riqueto - RM98685
+* Leonardo Mansur - RM551659
 
 ## Licença
 
