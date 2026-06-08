@@ -106,11 +106,12 @@ Embora o uso de `WeightedRandomSampler` tenha aumentado o recall da classe fogo,
 
 O projeto inclui uma aplicação simples em Streamlit capaz de:
 
-* carregar arquivos `.npz`
-* visualizar bandas do satélite
-* exibir o rótulo real
-* executar inferência utilizando o melhor modelo treinado
-* apresentar probabilidades e confiança da predição
+* Carregar arquivos `.npz`
+* Visualizar bandas do satélite
+* Exibir o rótulo real
+* Executar inferência utilizando o melhor modelo treinado
+* Apresentar probabilidades e confiança da predição
+* A aplicação Streamlit utiliza a ImprovedCNN como modelo final.
 
 ## Estrutura do repositório
 
@@ -119,16 +120,13 @@ acv-satellite-monitoring/
 ├── app/
 │   └── streamlit_app.py
 ├── artifacts/
-├── data/
-│   ├── raw/
-│   └── processed/
 ├── notebooks/
 │   └── 01_dataset_exploration.ipynb
 ├── results/
 ├── src/
-│   ├── inference/
-│   ├── models/
-│   └── training/
+│   └── models/
+│       ├── __init__.py
+│       └── cnn_models.py
 ├── .gitignore
 ├── README.md
 └── requirements.txt
@@ -136,8 +134,11 @@ acv-satellite-monitoring/
 
 ## Arquivos gerados
 
-* `results/model_comparison.csv`
-* `results/model_comparison.png`
+- `artifacts/improved_cnn_best.pt`
+- `results/model_comparison.csv`
+- `results/model_comparison.png`
+- `app/streamlit_app.py`
+- `src/models/cnn_models.py`
 
 ## Como executar
 
