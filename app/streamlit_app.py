@@ -64,10 +64,10 @@ class ImprovedCNN(nn.Module):
 
         self.classifier = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(256, 64),
+            nn.Linear(256, 128),
             nn.ReLU(),
             nn.Dropout(0.4),
-            nn.Linear(64, 2)
+            nn.Linear(128, 2)
         )
 
     def forward(self, x):
