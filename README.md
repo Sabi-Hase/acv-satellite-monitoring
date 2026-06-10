@@ -201,6 +201,9 @@ Projeto desenvolvido com foco em:
 * reprodutibilidade experimental
 * comparação de arquiteturas de CNN
 
+## Vídeo no Youtube  
+* https://youtu.be/IeyPI8WXm7Q  
+
 ## Autor(es)
 
 * Sabrina Flores - RM550781
