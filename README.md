@@ -204,11 +204,9 @@ Projeto desenvolvido com foco em:
 ## Vídeo no Youtube  
 * https://youtu.be/IeyPI8WXm7Q  
 
-## Autor(es)
+## Autora
 
 * Sabrina Flores - RM550781
-* Gabriel Riqueto - RM98685
-* Leonardo Mansur - RM551659
 
 ## Licença
 
