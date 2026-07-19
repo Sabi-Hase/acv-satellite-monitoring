@@ -1,5 +1,10 @@
 # ACV Satellite Monitoring
 
+**Languages / Idiomas**
+
+- 🇧🇷 [Português](#acv-satellite-monitoring)
+- 🇬🇧 [English](#english)
+
 Classificação de imagens de satélite para monitoramento de queimadas florestais com redes neurais convolucionais treinadas do zero.
 
 ## Visão geral
@@ -201,9 +206,6 @@ Projeto desenvolvido com foco em:
 * reprodutibilidade experimental
 * comparação de arquiteturas de CNN
 
-## Vídeo no Youtube  
-* https://youtu.be/IeyPI8WXm7Q  
-
 ## Autora
 
 * Sabrina Flores - RM550781
@@ -211,3 +213,217 @@ Projeto desenvolvido com foco em:
 ## Licença
 
 Uso acadêmico e portfólio.
+
+# English
+
+# ACV Satellite Monitoring
+
+Satellite image classification for wildfire monitoring using convolutional neural networks trained from scratch.
+
+## Overview
+
+This project was developed for the **Applied Computer Vision (ACV)** course and aims to solve a **binary image classification** problem in the context of **remote sensing and environmental monitoring**, applied to the **Space Industry**.
+
+The proposed solution uses satellite imagery from the **Sen2Fire** dataset to determine whether an image patch contains wildfire activity.
+
+## Problem Statement
+
+The objective is to classify each image patch into one of two classes:
+
+* **0 — No Fire**
+* **1 — Fire**
+
+The motivation is to support wildfire monitoring through computer vision techniques applied to satellite imagery.
+
+## Dataset
+
+The project uses the **Sen2Fire** dataset, which consists of satellite image patches with:
+
+* **2,466 patches** in total
+* **12 spectral bands**
+* **512 × 512** pixel resolution per patch
+* pixel-level spatial labels, converted in this project into **binary patch-level labels**
+
+### Data Split
+
+The dataset was split by scene to reduce information leakage between subsets:
+
+* **Training:** `scene1` and `scene2`
+* **Validation:** `scene3`
+* **Testing:** `scene4`
+
+### Class Distribution
+
+Across the complete dataset:
+
+* **2,117** patches without fire
+* **349** patches with fire
+
+The dataset is imbalanced, motivating the evaluation of techniques specifically designed to handle class imbalance.
+
+## Pre-processing
+
+The images were:
+
+* loaded from `.npz` files
+* resized to **128 × 128**
+* normalized on a per-patch basis
+* converted into PyTorch tensors
+
+## Trained Models
+
+Three different approaches were evaluated.
+
+### 1. BaselineCNN
+
+An initial CNN architecture composed of convolutional blocks including:
+
+* Convolution
+* Batch Normalization
+* ReLU
+* Max Pooling
+* Dropout
+
+### 2. ImprovedCNN
+
+A deeper and more stable architecture featuring:
+
+* additional convolutional layers
+* progressive Dropout regularization
+* an `AdaptiveAvgPool2d` layer
+
+### 3. ImprovedCNN + WeightedRandomSampler
+
+The same ImprovedCNN architecture trained using balanced sampling to improve representation of the minority class.
+
+## Results
+
+### Best Validation Performance
+
+| Model                               | Best Val Acc |
+| ----------------------------------- | ------------ |
+| BaselineCNN                         | 0.7738       |
+| ImprovedCNN                         | 0.8373       |
+| ImprovedCNN + WeightedRandomSampler | 0.7282       |
+
+### Test Set Performance
+
+| Model                               | Accuracy | Fire F1-score |
+| ----------------------------------- | -------- | ------------- |
+| BaselineCNN                         | 0.68     | 0.33          |
+| ImprovedCNN                         | 0.83     | 0.52          |
+| ImprovedCNN + WeightedRandomSampler | 0.70     | 0.40          |
+
+### Technical Conclusion
+
+The **ImprovedCNN** achieved the best balance between overall performance and the ability to detect the target class.
+
+Although using `WeightedRandomSampler` increased recall for the fire class, it resulted in lower overall performance compared with the standard ImprovedCNN architecture.
+
+## Functional Demonstration
+
+The project includes a simple Streamlit application capable of:
+
+* loading `.npz` files
+* visualising satellite spectral bands
+* displaying the ground-truth label
+* running inference using the best-performing trained model
+* presenting prediction probabilities and confidence scores
+
+The Streamlit application uses **ImprovedCNN** as the final deployed model.
+
+## Repository Structure
+
+```text
+acv-satellite-monitoring/
+├── app/
+│   └── streamlit_app.py
+├── artifacts/
+├── notebooks/
+│   └── 01_dataset_exploration.ipynb
+├── results/
+├── src/
+│   └── models/
+│       ├── __init__.py
+│       └── cnn_models.py
+├── .gitignore
+├── README.md
+└── requirements.txt
+```
+
+## Generated Files
+
+* `artifacts/improved_cnn_best.pt`
+* `results/model_comparison.csv`
+* `results/model_comparison.png`
+* `app/streamlit_app.py`
+* `src/models/cnn_models.py`
+
+## Running the Project
+
+### 1. Create and activate a virtual environment
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+### 2. Install the dependencies
+
+```powershell
+pip install -r requirements.txt
+```
+
+### 3. Open the notebook
+
+Open:
+
+```text
+notebooks/01_dataset_exploration.ipynb
+```
+
+### 4. Run all notebook cells
+
+The notebook includes:
+
+* dataset exploration
+* data pre-processing
+* CNN training
+* model evaluation
+* architecture comparison
+* inference on unseen image patches
+
+### 5. Launch the Streamlit application
+
+```powershell
+streamlit run app/streamlit_app.py
+```
+
+## Technologies Used
+
+* Python
+* PyTorch
+* NumPy
+* Pandas
+* Matplotlib
+* scikit-learn
+* Jupyter Notebook
+* Streamlit
+
+## Notes
+
+This project was developed with an emphasis on:
+
+* applied computer vision
+* remote sensing
+* environmental monitoring
+* experimental reproducibility
+* CNN architecture comparison
+
+## Author
+
+* Sabrina Flores – RM550781
+
+## License
+
+Academic and portfolio use.
